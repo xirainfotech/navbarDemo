@@ -14,48 +14,51 @@ class NavBar extends StatelessWidget {
     FavPage(),
     ProfilePage(),
   ];
-  final NavController controller = Get.put(NavController());
+  final navBloc = NavBloc();
   @override
   Widget build(BuildContext context) {
-    return GetX<NavController>(
-      initState: (_) {
-        controller.currentIndex.value = 0;
-      },
-      builder: (controller) {
-        return Scaffold(
-          body: pages[controller.currentIndex.value],
-          floatingActionButton: Container(
-            height: 70,
-            width: Get.width,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(
-                Data.navData.length,
-                (index) => InkWell(
-                  onTap: () {
-                    controller.changeIndex(index);
-                  },
-                  child: Column(
-                    children: [
-                      Text(
-                        Data.navData[index],
-                      ),
-                      const SizedBox(height: 5),
-                      controller.activeIndex() == index
-                          ? Container(
-                              height: 4,
-                              width: 20,
-                              color: Colors.red,
-                            )
-                          : Center(),
-                    ],
+    return StreamBuilder<int>(
+        initialData: 0,
+        stream: navBloc.stream,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: Text("TU GET HE KR"),
+            );
+          }
+          return Scaffold(
+            body: pages[snapshot.data],
+            floatingActionButton: Container(
+              height: 70,
+              width: Get.width,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: List.generate(
+                  Data.navData.length,
+                  (index) => InkWell(
+                    onTap: () {
+                      navBloc.changeIndex(index);
+                    },
+                    child: Column(
+                      children: [
+                        Text(
+                          Data.navData[index],
+                        ),
+                        const SizedBox(height: 5),
+                        // controller.activeIndex() == index
+                        //     ? Container(
+                        //         height: 4,
+                        //         width: 20,
+                        //         color: Colors.red,
+                        //       )
+                        //     : Center(),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        });
   }
 }
